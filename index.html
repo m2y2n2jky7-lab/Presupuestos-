@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>HB Presupuestos</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--ink:#111827;--muted:#667085;--line:#e5e7eb;--accent:#111827;--danger:#b42318}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:#111827;color:white;padding:18px 16px 16px;position:sticky;top:0;z-index:5}
+h1{font-size:22px;margin:0 0 3px}.sub{opacity:.72;font-size:13px}
+main{max-width:760px;margin:auto;padding:14px 12px 100px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 1px 2px #00000008}
+h2{font-size:16px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}
+label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin:0 0 5px}
+input,select,textarea{width:100%;border:1px solid #d0d5dd;border-radius:10px;padding:11px 10px;font-size:16px;background:#fff;color:var(--ink)}
+textarea{min-height:75px;resize:vertical}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+button{border:0;border-radius:10px;padding:11px 13px;font-weight:700;font-size:15px;background:#111827;color:white;cursor:pointer}
+button.secondary{background:#eef0f3;color:#111827}button.danger{background:#fff1f0;color:var(--danger)}button.small{font-size:13px;padding:8px 10px}
+.item{border:1px solid var(--line);border-radius:12px;padding:11px;margin:9px 0}.itemtop{display:flex;justify-content:space-between;gap:8px}.itemname{font-weight:700}.muted{color:var(--muted);font-size:12px}.price{font-weight:800;white-space:nowrap}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:1;min-width:125px}
+.totalbox{border-top:1px solid var(--line);margin-top:12px;padding-top:12px}.totrow{display:flex;justify-content:space-between;margin:7px 0}.grand{font-size:21px;font-weight:900}
+.catalog-search{margin-bottom:8px}.catalog-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.catalog-btn{text-align:left;background:#f8f9fa;color:#111827;border:1px solid var(--line);padding:11px;border-radius:11px}
+.catalog-btn b{display:block;font-size:14px}.catalog-btn span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.stickybar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:9px max(12px,env(safe-area-inset-left)) max(9px,env(safe-area-inset-bottom));display:flex;gap:8px;z-index:10}
+.stickybar button{flex:1}
+.empty{color:var(--muted);text-align:center;padding:15px 5px}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.catalog-grid{grid-template-columns:1fr}.full{grid-column:auto}}
+@page{size:A4;margin:10mm 9mm}
+.print-details{display:none}
+@media print{
+ body{background:white;color:#111;font-size:10px}
+ .no-print,header,.stickybar{display:none!important}
+ main{max-width:none;padding:0}
+ .print-title{display:block!important;margin:0 0 7px}
+ .print-title h1{font-size:17px;margin:0 0 2px}
+ .print-title p{font-size:9px;margin:0 0 5px}
+ .card{box-shadow:none;border:0;padding:3px 0;margin:0 0 5px}
+ .card h2{font-size:11px;margin:0 0 4px;border-bottom:1px solid #bbb;padding-bottom:2px}
+ .grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+ label{font-size:8px;margin:0}
+ input,select,textarea{border:0;padding:1px;font-size:9px;background:transparent}
+ #partidas .item{break-inside:avoid;page-break-inside:avoid;padding:3px 4px;margin:2px 0;border:1px solid #ddd;border-radius:4px}
+ #partidas .itemtop{gap:5px;align-items:flex-start}
+ #partidas .itemname{font-size:9px;line-height:1.15}
+ #partidas .muted{font-size:8px;line-height:1.1}
+ #partidas .price{font-size:9px}
+ #partidas .grid,#partidas .actions{display:none!important}
+ #partidas .print-details{display:block;font-size:8px;color:#444;margin-top:2px}
+ #vacio{display:none!important}
+ #partidas{display:block}
+ .totalbox{margin-top:5px;padding-top:4px}
+ .totrow{margin:2px 0;font-size:9px}
+ .grand{font-size:13px}
+ textarea{min-height:0}
+}
+.print-title{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>HB Presupuestos</h1>
+  <div class="sub">Taller de porcelánico HB · presupuesto rápido desde el móvil</div>
+</header>
+
+<main>
+<section class="card">
+<h2>1. Datos del cliente</h2>
+<div class="grid">
+<div><label>Cliente</label><input id="cliente" placeholder="Nombre y apellidos"></div>
+<div><label>Teléfono</label><input id="telefono" inputmode="tel" placeholder="Teléfono"></div>
+<div class="full"><label>Dirección / localidad</label><input id="direccion" placeholder="Dirección o localidad"></div>
+<div><label>Nº presupuesto</label><input id="numero" readonly></div>
+<div><label>Fecha</label><input id="fecha" type="date"></div>
+</div>
+</section>
+
+<section class="card">
+<h2>2. Añadir partidas</h2>
+<div class="no-print">
+  <input id="buscar" class="catalog-search" placeholder="Buscar partida…">
+  <div id="catalogo" class="catalog-grid"></div>
+</div>
+<div id="partidas"></div>
+<div id="vacio" class="empty">Todavía no has añadido ninguna partida.</div>
+</section>
+
+<section class="card">
+<h2>3. Impuestos y observaciones</h2>
+<div class="grid">
+<div><label>IVA (%)</label><input id="iva" type="number" inputmode="decimal" value="21" min="0" step="0.1"></div>
+<div><label>Descuento (%)</label><input id="descuento" type="number" inputmode="decimal" value="0" min="0" step="0.1"></div>
+<div class="full"><label>Observaciones</label><textarea id="observaciones" placeholder="Condiciones, plazos, materiales, etc."></textarea></div>
+</div>
+<div class="totalbox">
+<div class="totrow"><span>Subtotal</span><b id="subtotal">0,00 €</b></div>
+<div class="totrow"><span>Descuento</span><b id="descuentoImporte">0,00 €</b></div>
+<div class="totrow"><span>Base imponible</span><b id="base">0,00 €</b></div>
+<div class="totrow"><span>IVA</span><b id="ivaImporte">0,00 €</b></div>
+<div class="totrow grand"><span>TOTAL</span><span id="total">0,00 €</span></div>
+</div>
+</section>
+
+<section class="card no-print">
+<h2>Catálogo de partidas</h2>
+<div class="grid">
+<div><label>Nombre</label><input id="nuevoNombre" placeholder="Ej. Rodapié porcelánico"></div>
+<div><label>Unidad</label><select id="nuevoUnidad"><option>m²</option><option>ml</option><option>ud</option><option>hora</option><option>día</option><option>m³</option></select></div>
+<div class="full"><label>Descripción exacta</label><input id="nuevaDesc" placeholder="La descripción que aparecerá en el presupuesto"></div>
+<div><label>Precio</label><input id="nuevoPrecio" type="number" inputmode="decimal" step="0.01" placeholder="0,00"></div>
+</div>
+<div class="actions"><button onclick="crearPartida()">Guardar partida</button><button class="secondary" onclick="restaurarEjemplos()">Restaurar ejemplos</button></div>
+</section>
+
+<section class="card no-print">
+<h2>Herramientas</h2>
+<div class="actions">
+<button onclick="guardarPresupuesto()">Guardar presupuesto</button>
+<button class="secondary" onclick="nuevoPresupuesto()">Nuevo</button>
+<button class="secondary" onclick="exportarDatos()">Copia de seguridad</button>
+<button class="secondary" onclick="importarDatos()">Restaurar copia</button>
+</div>
+<input id="archivoImport" type="file" accept=".json" style="display:none">
+<p class="muted">Los datos se guardan en este navegador/dispositivo. Haz una copia de seguridad si vas a cambiar de móvil.</p>
+</section>
+
+<div class="print-title">
+<h1>HB Presupuestos — Taller de porcelánico HB</h1>
+<p>Presupuesto <span id="pnum"></span> · <span id="pfecha"></span></p>
+</div>
+</main>
+
+<div class="stickybar no-print">
+<button onclick="window.print()">🖨️ PDF / Imprimir</button>
+<button onclick="guardarPresupuesto()">💾 Guardar</button>
+</div>
+
+<script>
+const KEY='hb_presupuestos_v3';
+const CATKEY='hb_catalogo_v3';
+let catalogo=[];
+let partidas=[];
+let presupuestoGuardado=null;
+
+const ejemplos=[
+ {nombre:'Rodapié porcelánico',desc:'Fabricación de rodapié en porcelánico a medida, corte, mecanizado y acabado.',unidad:'ml',precio:0},
+ {nombre:'Peldaño técnico',desc:'Fabricación de peldaño técnico en porcelánico a medida, mecanizado y acabado.',unidad:'ml',precio:0},
+ {nombre:'Inglete porcelánico',desc:'Realización de inglete en pieza de porcelánico, preparación y acabado.',unidad:'ml',precio:0},
+ {nombre:'Encimera porcelánica',desc:'Fabricación y mecanizado de encimera de porcelánico a medida.',unidad:'m²',precio:0},
+ {nombre:'Revestimiento porcelánico',desc:'Colocación de revestimiento de porcelánico, según superficie y preparación del soporte.',unidad:'m²',precio:0},
+ {nombre:'Vierteaguas / albardilla',desc:'Fabricación de pieza de porcelánico a medida para vierteaguas o albardilla.',unidad:'ml',precio:0},
+ {nombre:'Nicho prefabricado',desc:'Fabricación de nicho prefabricado en porcelánico a medida.',unidad:'ud',precio:0}
+];
+
+function euros(n){return new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(Number(n)||0)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function val(id){return document.getElementById(id).value}
+function set(id,v){document.getElementById(id).value=v}
+
+function init(){
+ const today=new Date(); set('fecha',today.toISOString().slice(0,10));
+ const saved=JSON.parse(localStorage.getItem(CATKEY)||'null');
+ catalogo=saved&&Array.isArray(saved)?saved:ejemplos;
+ const p=JSON.parse(localStorage.getItem(KEY)||'null');
+ if(p){cargar(p)} else set('numero','HB-'+today.getFullYear()+'-'+String(today.getTime()).slice(-5));
+ renderCatalogo(); renderPartidas(); calcular();
+ document.getElementById('buscar').addEventListener('input',renderCatalogo);
+ ['iva','descuento','cliente','telefono','direccion','fecha','observaciones'].forEach(id=>document.getElementById(id).addEventListener('input',calcular));
+}
+function renderCatalogo(){
+ const q=val('buscar').toLowerCase();
+ const box=document.getElementById('catalogo'); box.innerHTML='';
+ catalogo.filter(x=>(x.nombre+' '+x.desc).toLowerCase().includes(q)).forEach((x,i)=>{
+  const b=document.createElement('button'); b.className='catalog-btn';
+  b.innerHTML='<b>'+esc(x.nombre)+'</b><span>'+esc(x.unidad)+' · '+(x.precio?euros(x.precio):'precio pendiente')+'</span>';
+  b.onclick=()=>agregar(i);
+  box.appendChild(b);
+ });
+}
+function agregar(i){
+ const x=catalogo[i];
+ partidas.push({id:uid(),nombre:x.nombre,desc:x.desc,unidad:x.unidad,precio:Number(x.precio)||0,cantidad:1});
+ renderPartidas(); calcular();
+}
+function renderPartidas(){
+ const box=document.getElementById('partidas'); box.innerHTML='';
+ document.getElementById('vacio').style.display=partidas.length?'none':'block';
+ partidas.forEach((p,i)=>{
+  const d=document.createElement('div'); d.className='item';
+  d.innerHTML=`
+  <div class="itemtop"><div><div class="itemname">${esc(p.nombre)}</div><div class="muted">${esc(p.desc)}</div></div><div class="price">${euros(p.cantidad*p.precio)}</div></div>
+  <div class="grid" style="margin-top:9px">
+   <div><label>Cantidad (${esc(p.unidad)})</label><input data-i="${i}" class="cant" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" autocomplete="off" value="${p.cantidad}"></div>
+   <div><label>Precio / ${esc(p.unidad)}</label><input data-i="${i}" class="prec" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" autocomplete="off" value="${p.precio}"></div>
+   <div class="full"><label>Descripción del presupuesto</label><input data-i="${i}" class="desc" value="${escAttr(p.desc)}"></div>
+  </div>
+  <div class="print-details">${esc(p.cantidad)} ${esc(p.unidad)} × ${euros(p.precio)} = <b>${euros(p.cantidad*p.precio)}</b></div>
+  <div class="actions"><button class="danger small" data-del="${i}">Eliminar</button></div>`;
+  box.appendChild(d);
+ });
+ box.querySelectorAll('.cant').forEach(e=>e.oninput=()=>{
+   const i=Number(e.dataset.i);
+   partidas[i].cantidad = e.value === '' ? 0 : (Number(String(e.value).replace(',','.'))||0);
+   calcular();
+   actualizarImportesPartidas();
+ });
+ box.querySelectorAll('.prec').forEach(e=>e.oninput=()=>{
+   const i=Number(e.dataset.i);
+   partidas[i].precio = e.value === '' ? 0 : (Number(String(e.value).replace(',','.'))||0);
+   calcular();
+   actualizarImportesPartidas();
+ });
+ box.querySelectorAll('.desc').forEach(e=>e.oninput=()=>{
+   partidas[Number(e.dataset.i)].desc=e.value;
+ });
+ box.querySelectorAll('[data-del]').forEach(e=>e.onclick=()=>{
+   partidas.splice(Number(e.dataset.del),1);
+   renderPartidas();
+   calcular();
+ });
+}
+function actualizarImportesPartidas(){
+ document.querySelectorAll('#partidas .item').forEach((el,i)=>{
+   const p=partidas[i];
+   const price=el.querySelector('.price');
+   if(price) price.textContent=euros((Number(p.cantidad)||0)*(Number(p.precio)||0));
+ });
+}
+function calcular(){
+ let sub=partidas.reduce((s,p)=>s+(Number(p.cantidad)||0)*(Number(p.precio)||0),0);
+ let d=sub*(Number(val('descuento'))||0)/100, base=sub-d, iv=base*(Number(val('iva'))||0)/100, total=base+iv;
+ document.getElementById('subtotal').textContent=euros(sub);
+ document.getElementById('descuentoImporte').textContent=euros(d);
+ document.getElementById('base').textContent=euros(base);
+ document.getElementById('ivaImporte').textContent=euros(iv);
+ document.getElementById('total').textContent=euros(total);
+ document.getElementById('pnum').textContent=val('numero');
+ document.getElementById('pfecha').textContent=val('fecha');
+}
+function crearPartida(){
+ const n=val('nuevoNombre').trim(), desc=val('nuevaDesc').trim(), precio=Number(val('nuevoPrecio'))||0, unidad=val('nuevoUnidad');
+ if(!n){alert('Pon un nombre para la partida.');return}
+ catalogo.push({nombre:n,desc:desc||n,unidad,precio});
+ localStorage.setItem(CATKEY,JSON.stringify(catalogo));
+ set('nuevoNombre','');set('nuevaDesc','');set('nuevoPrecio','');
+ renderCatalogo();
+ alert('Partida guardada en tu catálogo.');
+}
+function restaurarEjemplos(){catalogo=[...ejemplos];localStorage.setItem(CATKEY,JSON.stringify(catalogo));renderCatalogo()}
+function datos(){
+ return {cliente:val('cliente'),telefono:val('telefono'),direccion:val('direccion'),numero:val('numero'),fecha:val('fecha'),iva:val('iva'),descuento:val('descuento'),observaciones:val('observaciones'),partidas};
+}
+function cargar(p){
+ ['cliente','telefono','direccion','numero','fecha','iva','descuento','observaciones'].forEach(k=>{if(p[k]!==undefined)set(k,p[k])});
+ partidas=Array.isArray(p.partidas)?p.partidas:[];
+}
+function guardarPresupuesto(){localStorage.setItem(KEY,JSON.stringify(datos()));alert('Presupuesto guardado en este dispositivo.')}
+function nuevoPresupuesto(){
+ if(!confirm('¿Crear un presupuesto nuevo?'))return;
+ partidas=[];['cliente','telefono','direccion','observaciones'].forEach(id=>set(id,''));set('descuento','0');set('iva','21');
+ const d=new Date();set('fecha',d.toISOString().slice(0,10));set('numero','HB-'+d.getFullYear()+'-'+String(d.getTime()).slice(-5));
+ renderPartidas();calcular();
+}
+function exportarDatos(){
+ const blob=new Blob([JSON.stringify({presupuesto:datos(),catalogo},null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='HB_presupuestos_copia.json';a.click();URL.revokeObjectURL(a.href);
+}
+function importarDatos(){document.getElementById('archivoImport').click()}
+document.getElementById('archivoImport').addEventListener('change',e=>{
+ const f=e.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{try{const x=JSON.parse(r.result);if(x.catalogo)catalogo=x.catalogo;if(x.presupuesto)cargar(x.presupuesto);localStorage.setItem(CATKEY,JSON.stringify(catalogo));renderCatalogo();renderPartidas();calcular();alert('Copia restaurada.')}catch(err){alert('El archivo no es una copia válida.')}};r.readAsText(f)
+});
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function escAttr(s){return esc(s)}
+init();
+</script>
+</body>
+</html>
